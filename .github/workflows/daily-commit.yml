@@ -1,0 +1,30 @@
+name: Daily Automated Commit
+on:
+  schedule:
+    - cron: '30 18 * * *'  # Daily at 18:30 UTC (00:00 IST)
+  workflow_dispatch:       # Manual trigger option
+
+jobs:
+  commit-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # Required for pushing changes
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Update daily log (23f2004637@ds.study.iitm.ac.in)
+      run: |
+        echo "Daily update - $(date)" >> daily_log.txt
+        
+    - name: Configure Git (IITM credentials)
+      run: |
+        git config --global user.name "DevSync Bot"
+        git config --global user.email "23f2004637@ds.study.iitm.ac.in"
+
+    - name: Commit and push changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: Automated daily update
+        file_pattern: 'daily_log.txt'
